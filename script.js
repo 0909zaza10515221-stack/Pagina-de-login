@@ -31,15 +31,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnsBack =
         document.querySelectorAll('.btn-back');
 
-    // FORMS
+    // FORMULÁRIOS
     const registerForm =
         document.getElementById('register-form');
 
     const loginForm =
         document.getElementById('login-form');
 
-    // TROCAR TELAS
-    function betterSwitchView(hideView, showView) {
+    // TROCA DE TELA
+    function switchView(hideView, showView) {
 
         hideView.classList.remove('active');
 
@@ -53,14 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             showView.classList.add('active');
 
-        }, 400);
+        }, 300);
 
     }
 
     // ABRIR CADASTRO
     btnShowRegister.addEventListener('click', () => {
 
-        betterSwitchView(
+        switchView(
             welcomeView,
             registerView
         );
@@ -70,14 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // ABRIR LOGIN
     btnShowLogin.addEventListener('click', () => {
 
-        betterSwitchView(
+        switchView(
             welcomeView,
             loginView
         );
 
     });
 
-    // VOLTAR
+    // BOTÃO VOLTAR
     btnsBack.forEach(btn => {
 
         btn.addEventListener('click', () => {
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentView =
                 btn.closest('.view');
 
-            betterSwitchView(
+            switchView(
                 currentView,
                 welcomeView
             );
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 formData.entries()
             );
 
-        console.log(data);
+        console.log('CADASTRO:', data);
 
         const submitBtn =
             registerForm.querySelector(
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.textContent =
             'Criando conta...';
 
-        // AUTH
+        // CRIA USUÁRIO
         const {
             data: authData,
             error
@@ -133,8 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         });
 
-        // ERRO
+        // ERRO AUTH
         if (error) {
+
+            console.error(error);
 
             alert(error.message);
 
@@ -145,10 +147,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // USUÁRIO
-        const user =
-            authData.user;
+        const user = authData.user;
 
-        // SALVA PERFIL
+        // SALVAR PERFIL
         const {
             error: profileError
         } = await supabaseClient
@@ -157,7 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
                     id: user.id,
 
-                    nome: data.nome,
+                    nome:
+                        `${data.nome} ${data.sobrenome}`,
 
                     telefone: data.telefone
                 }
@@ -166,7 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // ERRO PERFIL
         if (profileError) {
 
+            console.error(profileError);
+
             alert(profileError.message);
+
+            submitBtn.textContent =
+                originalText;
 
             return;
         }
@@ -178,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             registerForm.reset();
 
-            betterSwitchView(
+            switchView(
                 registerView,
                 loginView
             );
@@ -204,6 +211,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 formData.entries()
             );
 
+        console.log('LOGIN:', data);
+
         const submitBtn =
             loginForm.querySelector(
                 'button[type="submit"]'
@@ -215,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.textContent =
             'Entrando...';
 
-        // LOGIN REAL
+        // LOGIN
         const {
             data: loginData,
             error
@@ -232,6 +241,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // ERRO LOGIN
         if (error) {
 
+            console.error(error);
+
             alert(
                 'Email ou senha incorretos'
             );
@@ -247,7 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.textContent =
             'Login realizado!';
 
-        // REDIRECIONA
         setTimeout(() => {
 
             window.location.href =
