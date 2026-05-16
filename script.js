@@ -1,130 +1,260 @@
+const SUPABASE_URL =
+'https://aajblmuulvztjhstomlg.supabase.co';
+
+const SUPABASE_ANON_KEY =
+'sb_publishable_l8k3tU3fmN0S4LE6-mxAHA_-eKdzz1Q';
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Referências das Views
-    const welcomeView = document.getElementById('welcome-view');
-    const registerView = document.getElementById('register-view');
-    const loginView = document.getElementById('login-view');
 
-    // Referências dos Botões
-    const btnShowRegister = document.getElementById('btn-show-register');
-    const btnShowLogin = document.getElementById('btn-show-login');
-    const btnsBack = document.querySelectorAll('.btn-back');
+    // VIEWS
+    const welcomeView =
+        document.getElementById('welcome-view');
 
-    // Referências dos Formulários
-    const registerForm = document.getElementById('register-form');
-    const loginForm = document.getElementById('login-form');
+    const registerView =
+        document.getElementById('register-view');
 
-    // Função para alternar telas com transição suave
-    function switchView(viewToShow) {
-        // Encontra a view atualmente ativa
-        const activeView = document.querySelector('.view.active');
-        
-        if (activeView) {
-            // Remove a classe active e oculta a tela atual
-            activeView.classList.remove('active');
-            
-            // Aguarda o fim da animação de saída (opcional, dependendo do design CSS)
-            setTimeout(() => {
-                activeView.style.display = 'none';
-                
-                // Prepara e exibe a nova tela
-                viewToShow.style.display = 'block';
-                // Um pequeno delay para garantir que o display block foi aplicado antes da animação
-                requestAnimationFrame(() => {
-                    viewToShow.classList.add('active');
-                });
-            }, 300); // tempo menor que a transição CSS para não bugar, ou igual a 0 se display for modificado antes
-        } else {
-            // Fallback caso não tenha view ativa
-            viewToShow.style.display = 'block';
-            requestAnimationFrame(() => {
-                viewToShow.classList.add('active');
-            });
-        }
-    }
+    const loginView =
+        document.getElementById('login-view');
 
-    // Como o CSS lida com display:none de forma um pouco complexa com animações
-    // Uma abordagem melhor é alterar o display e logo em seguida adicionar a classe active.
+    // BOTÕES
+    const btnShowRegister =
+        document.getElementById('btn-show-register');
+
+    const btnShowLogin =
+        document.getElementById('btn-show-login');
+
+    const btnsBack =
+        document.querySelectorAll('.btn-back');
+
+    // FORMS
+    const registerForm =
+        document.getElementById('register-form');
+
+    const loginForm =
+        document.getElementById('login-form');
+
+    // TROCAR TELAS
     function betterSwitchView(hideView, showView) {
+
         hideView.classList.remove('active');
-        
+
         setTimeout(() => {
+
             hideView.style.display = 'none';
+
             showView.style.display = 'block';
-            
-            // Força um reflow para garantir que a transição CSS ocorra
-            void showView.offsetWidth; 
-            
+
+            void showView.offsetWidth;
+
             showView.classList.add('active');
-        }, 400); // 400ms = tempo da transição no CSS (--transition-speed)
+
+        }, 400);
+
     }
 
-    // Event Listeners de Navegação
+    // ABRIR CADASTRO
     btnShowRegister.addEventListener('click', () => {
-        betterSwitchView(welcomeView, registerView);
+
+        betterSwitchView(
+            welcomeView,
+            registerView
+        );
+
     });
 
+    // ABRIR LOGIN
     btnShowLogin.addEventListener('click', () => {
-        betterSwitchView(welcomeView, loginView);
+
+        betterSwitchView(
+            welcomeView,
+            loginView
+        );
+
     });
 
+    // VOLTAR
     btnsBack.forEach(btn => {
+
         btn.addEventListener('click', () => {
-            const currentView = btn.closest('.view');
-            betterSwitchView(currentView, welcomeView);
-            
-            // Opcional: Limpar os formulários ao voltar
-            if(currentView.id === 'register-view') registerForm.reset();
-            if(currentView.id === 'login-view') loginForm.reset();
+
+            const currentView =
+                btn.closest('.view');
+
+            betterSwitchView(
+                currentView,
+                welcomeView
+            );
+
         });
+
     });
 
-    // Manipulação do Formulário de Cadastro
-    registerForm.addEventListener('submit', (e) => {
-        e.preventDefault(); // Impede o recarregamento da página
+    // CADASTRO
+    registerForm.addEventListener('submit',
+    async (e) => {
 
-        // Captura os dados usando FormData
-        const formData = new FormData(registerForm);
-        const data = Object.fromEntries(formData.entries());
+        e.preventDefault();
 
-        // Loga os dados como JSON no console
-        console.log('--- DADOS DE CADASTRO ---');
-        console.log(JSON.stringify(data, null, 2));
+        const formData =
+            new FormData(registerForm);
 
-        // Feedback visual (opcional)
-        const submitBtn = registerForm.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Enviado com sucesso!';
-        submitBtn.style.background = 'var(--accent-secondary)';
-        
+        const data =
+            Object.fromEntries(
+                formData.entries()
+            );
+
+        console.log(data);
+
+        const submitBtn =
+            registerForm.querySelector(
+                'button[type="submit"]'
+            );
+
+        const originalText =
+            submitBtn.textContent;
+
+        submitBtn.textContent =
+            'Criando conta...';
+
+        // AUTH
+        const {
+            data: authData,
+            error
+        } = await supabaseClient.auth.signUp({
+
+            email: data.email,
+
+            password: data.password
+
+        });
+
+        // ERRO
+        if (error) {
+
+            alert(error.message);
+
+            submitBtn.textContent =
+                originalText;
+
+            return;
+        }
+
+        // USUÁRIO
+        const user =
+            authData.user;
+
+        // SALVA PERFIL
+        const {
+            error: profileError
+        } = await supabaseClient
+            .from('profiles')
+            .insert([
+                {
+                    id: user.id,
+
+                    nome: data.nome,
+
+                    telefone: data.telefone
+                }
+            ]);
+
+        // ERRO PERFIL
+        if (profileError) {
+
+            alert(profileError.message);
+
+            return;
+        }
+
+        submitBtn.textContent =
+            'Conta criada!';
+
         setTimeout(() => {
-            submitBtn.textContent = originalText;
-            submitBtn.style.background = '';
+
             registerForm.reset();
-            betterSwitchView(registerView, welcomeView);
-        }, 2000);
+
+            betterSwitchView(
+                registerView,
+                loginView
+            );
+
+            submitBtn.textContent =
+                originalText;
+
+        }, 1500);
+
     });
 
-    // Manipulação do Formulário de Login
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault(); // Impede o recarregamento da página
+    // LOGIN
+    loginForm.addEventListener('submit',
+    async (e) => {
 
-        // Captura os dados usando FormData
-        const formData = new FormData(loginForm);
-        const data = Object.fromEntries(formData.entries());
+        e.preventDefault();
 
-        // Loga os dados como JSON no console
-        console.log('--- DADOS DE LOGIN ---');
-        console.log(JSON.stringify(data, null, 2));
+        const formData =
+            new FormData(loginForm);
 
-        // Feedback visual (opcional)
-        const submitBtn = loginForm.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Acessando...';
-        
+        const data =
+            Object.fromEntries(
+                formData.entries()
+            );
+
+        const submitBtn =
+            loginForm.querySelector(
+                'button[type="submit"]'
+            );
+
+        const originalText =
+            submitBtn.textContent;
+
+        submitBtn.textContent =
+            'Entrando...';
+
+        // LOGIN REAL
+        const {
+            data: loginData,
+            error
+        } = await supabaseClient
+            .auth
+            .signInWithPassword({
+
+                email: data.email,
+
+                password: data.password
+
+            });
+
+        // ERRO LOGIN
+        if (error) {
+
+            alert(
+                'Email ou senha incorretos'
+            );
+
+            submitBtn.textContent =
+                originalText;
+
+            return;
+        }
+
+        console.log(loginData);
+
+        submitBtn.textContent =
+            'Login realizado!';
+
+        // REDIRECIONA
         setTimeout(() => {
-            submitBtn.textContent = originalText;
-            loginForm.reset();
-            alert('Dados capturados no console. Confira o console do desenvolvedor (F12).');
+
+            window.location.href =
+                'dashboard.html';
+
         }, 1000);
+
     });
+
 });
