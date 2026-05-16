@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity | Bem-vindo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <main class="container">
+        <!-- Tela de Boas-Vindas -->
+        <div id="welcome-view" class="view active">
+            <div class="brand">
+                <div class="logo"></div>
+                <h1>Antigravity</h1>
+            </div>
+            <p class="subtitle">Bem-vindo ao Antigravity. Você deseja cadastrar uma nova conta ou entrar com uma conta existente?</p>
+            
+            <div class="actions">
+                <button id="btn-show-register" class="btn btn-primary">Cadastrar Nova Conta</button>
+                <button id="btn-show-login" class="btn btn-secondary">Entrar</button>
+            </div>
+        </div>
+
+        <!-- Formulário de Cadastro -->
+        <div id="register-view" class="view hidden">
+            <div class="view-header">
+                <h2>Criar Conta</h2>
+                <p>Junte-se à próxima geração de tecnologia.</p>
+            </div>
+            
+            <form id="register-form" class="form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reg-nome">Nome</label>
+                        <input type="text" id="reg-nome" name="nome" placeholder="Seu nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-sobrenome">Sobrenome</label>
+                        <input type="text" id="reg-sobrenome" name="sobrenome" placeholder="Seu sobrenome" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reg-email">E-mail</label>
+                    <input type="email" id="reg-email" name="email" placeholder="seu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reg-telefone">Número de Telefone</label>
+                    <input type="tel" id="reg-telefone" name="telefone" placeholder="(00) 00000-0000" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reg-senha">Senha</label>
+                    <input type="password" id="reg-senha" name="senha" placeholder="••••••••" required>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-ghost btn-back">Voltar</button>
+                    <button type="submit" class="btn btn-primary">Finalizar Cadastro</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Formulário de Login -->
+        <div id="login-view" class="view hidden">
+            <div class="view-header">
+                <h2>Acessar Conta</h2>
+                <p>Bem-vindo de volta ao Antigravity.</p>
+            </div>
+            
+            <form id="login-form" class="form">
+                <div class="form-group">
+                    <label for="log-email">E-mail</label>
+                    <input type="email" id="log-email" name="email" placeholder="seu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="log-senha">Senha</label>
+                    <input type="password" id="log-senha" name="senha" placeholder="••••••••" required>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-ghost btn-back">Voltar</button>
+                    <button type="submit" class="btn btn-primary">Acessar</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
